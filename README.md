@@ -27,20 +27,19 @@ Dependencies:
   docker-compose
   python2.7 
 
-  From this directory, build the docker image for the service
-  `docker build -t ua.code.challenge .`
 
-  Then run docker compose to run the service and db container:
-  `docker-compose up`
 
 Part 2:
 
    Scaling this service to 1000/tps should not be a particularly difficult challenge.
-   With almost no optimizations or performance considerations I was able to to achieve 3-400/tps with
+   With almost no optimizations or performance considerations I was able to to achieve 6-700/tps with
    one service container.
 
    I'd probably go with something like ECS to use AWS's autoscaling abilities, I think it should
    be pretty straightforward to apply horizontal scaling techniques with these containers.
+
+   The functional/ephemeral nature of the docker nodes allow them to be added to or swapped out with impunity.
+   I'd simply add nodes until the desired performance was reached. 
 
    As far as technology goes. I'd stick with the chosen tech stack unless there were significant
    changes to the use case (or if one was provided :D)
@@ -63,7 +62,7 @@ For example with django/python and sqlite and `./manage.py runserver` I could me
 However, I have been looking for an excuse to fiddle with both technolgies, and this seemed appropriate. For one, using django would bring
 in a whole host of unecessary dependencies and code just for 2 endpoints. 
 
-I hope you won't hold this decision against me, (I'd certainly advice anyone doing a code challenge to use their most comfortable tech)
-But my curiosity got the best of me. I'd love to discuss the details of this further and what I learned doign this. (I had a lot of fun)
+I hope you won't hold this decision against me, (I'd certainly advise anyone doing a code challenge to use their most comfortable tech)
+But my curiosity got the best of me. I'd love to discuss the details of this further and what I learned doing this. (I had a lot of fun)
 
 All in all I'd say I spent around 4-5 hours on this, including reading through documentation and thinking about how to approach it. Perhaps 2-3 actually writing code and debugging things.

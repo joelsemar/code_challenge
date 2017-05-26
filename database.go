@@ -8,8 +8,7 @@ import (
 	"time"
 )
 
-//const CONNECTION_STRING = "mongodb://mongo01:27017"
-const CONNECTION_STRING = "mongodb://127.0.0.1:27017"
+const CONNECTION_STRING = "mongodb://mongo01:27017"
 const DEFAULT_TIMEOUT = 60
 
 type MongoConnection struct {
@@ -23,7 +22,7 @@ func NewMongoConnection() (connection *MongoConnection) {
 }
 
 func (this *MongoConnection) createLocalConnection() (err error) {
-	Log("Connecting to local mongo server!....\n")
+	Log("Connecting to mongo server....\n")
 	this.session, err = mgo.Dial(CONNECTION_STRING)
 
 	if err != nil {

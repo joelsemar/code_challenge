@@ -13,6 +13,13 @@ type Service struct {
 	router       *mux.Router
 }
 
+func NewService() (service *Service) {
+	service = new(Service)
+	service.dbConnection = NewMongoConnection()
+	service.setRoutes()
+	return
+}
+
 func (this *Service) serve(port int) {
 	Log("Listening on port %d\n", port)
 	http.ListenAndServe(fmt.Sprintf(":%d", port), this.router)
@@ -69,11 +76,4 @@ func (this *Service) send(responseWriter http.ResponseWriter, response interface
 	responseWriter.Header().Set("Content-Type", "application/json")
 	responseWriter.WriteHeader(statusCode)
 	fmt.Fprintf(responseWriter, "%s", out)
-}
-
-func NewService() (service *Service) {
-	service = new(Service)
-	service.dbConnection = NewMongoConnection()
-	service.setRoutes()
-	return
 }
