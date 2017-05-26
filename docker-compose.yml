@@ -1,0 +1,10 @@
+version: '2'
+services:
+  service:
+    image: ua.code.challenge
+    ports:
+     - "8080:8080"
+    volumes:
+     - .:/go/src/app
+  mongo01:
+    image: "mongo"
