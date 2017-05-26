@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import requests
 import unittest
 from datetime import datetime

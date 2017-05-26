@@ -28,18 +28,31 @@ Dependencies:
   python2.7 
 
 
+from this directory run:
+
+`docker-compose up`
+
+or
+
+`docker-compose up --build` to make sure to build local changes
+
+to run tests:
+
+`./test.py`
+
+
 
 Part 2:
 
    Scaling this service to 1000/tps should not be a particularly difficult challenge.
-   With almost no optimizations or performance considerations I was able to to achieve 6-700/tps with
+   With almost no optimizations or performance considerations I was able to to achieve 3-400/tps with
    one service container.
 
    I'd probably go with something like ECS to use AWS's autoscaling abilities, I think it should
    be pretty straightforward to apply horizontal scaling techniques with these containers.
 
-   The functional/ephemeral nature of the docker nodes allow them to be added to or swapped out with impunity.
-   I'd simply add nodes until the desired performance was reached. 
+   The stateless/ephemeral nature of the docker nodes allow them to be added to or swapped out with impunity.
+   I'd simply add load balanced nodes until the desired performance was reached. 
 
    As far as technology goes. I'd stick with the chosen tech stack unless there were significant
    changes to the use case (or if one was provided :D)
@@ -48,9 +61,9 @@ Part 2:
 
    a.) Entity relations became important (users, friend lists, etc, I'd consider Postgresql and/or a proper ORM)
    b.) Any siginifcant business logic became necessary for the service to function. I'm not sure that go is
-   the right choice for operating at a higher level. It lacks the necessary abstractions for more complex application architecture. (classes, interhitence etc)
+   the right choice for operating at a higher level. It lacks the necessary abstractions for more complex application architecture. (classes, interhitance etc)
 
-   As for monitoring newrelic is my go to lately.
+   As for monitoring NewRelic is my go to lately.
 
 
 
