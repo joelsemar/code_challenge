@@ -1,18 +1,16 @@
 package main
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"gopkg.in/mgo.v2/bson"
+	"time"
+)
 
 type MessageDocument struct {
 	Text     string        `json:"text" bson:"text"`
 	Username string        `json:"username" bson:"username"`
-	Timeout  int           `json:"timeout,omitempty" bson:"timeout"`
 	Id       bson.ObjectId `json:"id,omitempty" bson:"_id"`
-	Read     bool          `json:"-" bson:"read"`
-}
-
-func (this *MessageDocument) isExpired() bool {
-	cutoff := CutoffFromTimeout(this.Timeout)
-	return cutoff > this.Id || this.Read == true
+	Timeout  int           `json:"timeout" bson:"timeout"`
+	Expires  time.Time     `json:"-" bson:"expires"`
 }
 
 type Response struct {

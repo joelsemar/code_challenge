@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-const CONNECTION_STRING = "mongodb://mongo01:27017"
+//const CONNECTION_STRING = "mongodb://mongo01:27017"
+const CONNECTION_STRING = "mongodb://127.0.0.1:27017"
 const DEFAULT_TIMEOUT = 60
-const MAX_TIMEOUT = 60 * 60
 
 type MongoConnection struct {
 	session *mgo.Session
@@ -58,10 +58,13 @@ func (this *MongoConnection) addMessage(message *MessageDocument) (err error) {
 	}
 
 	message.Id = bson.NewObjectId()
+
 	if message.Timeout == 0 {
 		message.Timeout = DEFAULT_TIMEOUT
 	}
-	message.Read = false
+
+	expires := time.Now().Add(time.Duration(message.Timeout) * time.Second)
+	message.Expires = expires
 	err = collection.Insert(message)
 	return
 }
@@ -70,28 +73,19 @@ func (this *MongoConnection) getMessages(username string) (messages Messages, er
 	messages = Messages{}
 	session, collection, err := this.getSessionAndCollection()
 	defer session.Close()
+
 	if err != nil {
 		log.Fatal("Failed to get db collection %v", err)
 	}
 
-	query := bson.M{"username": username, "read": false, "_id": bson.M{"$gt": CutoffFromTimeout(MAX_TIMEOUT)}}
+	query := bson.M{"username": username, "expires": bson.M{"$gt": time.Now()}}
 	err = collection.Find(query).All(&messages)
-	messages = this.filterExpiredMessages(messages)
-	this.markRead(messages)
 	return
 }
 
-func (this *MongoConnection) filterExpiredMessages(messages Messages) (results Messages) {
-	results = Messages{}
-	for _, message := range messages {
-		if !message.isExpired() {
-			results = append(results, message)
-		}
-	}
-	return
-}
-
-func (this *MongoConnection) markRead(messages Messages) {
+// Mark the given list of messages as expiring right now
+// should act as a soft delete
+func (this *MongoConnection) markExpired(messages Messages) {
 	ids := []bson.ObjectId{}
 	for _, message := range messages {
 		ids = append(ids, message.Id)
@@ -104,13 +98,5 @@ func (this *MongoConnection) markRead(messages Messages) {
 		log.Fatal("Failed to get db collection %v", err)
 	}
 
-	collection.UpdateAll(query, bson.M{"$set": bson.M{"read": true}})
-}
-
-// Given a timeout in seconds,return an ObjectId representing the "cutoff" for that timeout
-// Any objects with ids before that should be considered expired
-func CutoffFromTimeout(timeout int) bson.ObjectId {
-	now := time.Now()
-	cutoff := now.Add(time.Duration(-1*timeout) * time.Second)
-	return bson.NewObjectIdWithTime(cutoff)
+	collection.UpdateAll(query, bson.M{"$set": bson.M{"expires": time.Now()}})
 }

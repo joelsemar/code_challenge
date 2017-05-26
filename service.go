@@ -41,9 +41,10 @@ func (this *Service) createMessage(responseWriter http.ResponseWriter, request *
 
 // Fetch all messages for the given username
 func (this *Service) getMessages(responseWriter http.ResponseWriter, request *http.Request) {
-	fmt.Println("Get messages.. ")
+	Log("Get messages.. ")
 	username := mux.Vars(request)["username"]
 	results, err := this.dbConnection.getMessages(username)
+	this.dbConnection.markExpired(results)
 	if err != nil {
 		this.fail(responseWriter, err)
 	}
